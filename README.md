@@ -1,2 +1,20 @@
-# visual_resume
-A visually engaging resume for Sarath Krishnan P V — Flutter Developer with 2 years of experience in building scalable mobile apps using GetX, Provider, and BloC. This visual resume showcases my technical expertise, major projects (like PiggyBack Sports and LeadsDen), and career journey through a modern, interactive layout. Built using Flutter.
+# Sarath Krishnan - Visual Resume
+
+A dynamic and interactive visual resume highlighting my journey as a Flutter developer.
+
+## 🧠 Skills
+- Flutter, Dart, Firebase, Hive
+- State Management: GetX, Provider, BloC
+- Architectures: MVVM, MVC, DDD
+- Tools: Figma, GitHub, Cursor AI
+
+## 🔧 Projects
+- PiggyBack Sports (Live on Play Store & App Store)
+- LeadsDen (CRM Platform)
+- Budget Bee (Personal Finance App)
+- Knack (E-learning Platform)
+
+## 📫 Connect with Me
+[LinkedIn](https://www.linkedin.com/in/sarath-krishnan-p-v/)  
+[GitHub](https://github.com/pvsarathkrishnan)  
+[pvsarathkrishnan@gmail.com](mailto:pvsarathkrishnan@gmail.com)
