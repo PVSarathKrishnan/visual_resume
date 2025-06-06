@@ -10,6 +10,7 @@ A dynamic and interactive visual resume highlighting my journey as a Flutter dev
 
 ## 🔧 Projects
 - PiggyBack Sports (Live on Play Store & App Store)
+- MY Property Journey (Realtor Management system)
 - LeadsDen (CRM Platform)
 - Budget Bee (Personal Finance App)
 - Knack (E-learning Platform)
