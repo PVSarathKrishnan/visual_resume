@@ -118,7 +118,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           CustomScrollView(
             controller: _scrollController,
             slivers: [
-              // Hero Section
+          // Hero Section
               SliverToBoxAdapter(child: _buildHeroSection(context)),
               
               // Stats Section
@@ -160,7 +160,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               position: _heroSlideIn,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+              children: [
                   // Profile Image with Glassmorphism
                   _buildProfileSection(context, isMobile),
                   
@@ -207,7 +207,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ),
         ],
       ),
-      child: Container(
+        child: Container(
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
@@ -217,9 +217,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             width: 2,
           ),
         ),
-        child: Icon(
-          Icons.person,
-          size: isMobile ? 60 : 80,
+                child: Icon(
+                  Icons.person,
+                  size: isMobile ? 60 : 80,
           color: AppColors.ghostWhite,
         ),
       ),
@@ -229,16 +229,16 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget _buildNameSection(BuildContext context, bool isMobile) {
     return Column(
       children: [
-        Text(
+              Text(
           ResumeData.fullName,
           style: Theme.of(context).textTheme.displayLarge?.copyWith(
             fontSize: isMobile ? 32 : 48,
             fontWeight: FontWeight.w800,
             color: AppColors.night,
             letterSpacing: -1,
-          ),
-          textAlign: TextAlign.center,
-        ),
+                ),
+                textAlign: TextAlign.center,
+              ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -273,9 +273,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           fontSize: isMobile ? 16 : 18,
           height: 1.6,
           color: AppColors.night.withOpacity(0.8),
-        ),
-        textAlign: TextAlign.center,
-      ),
+                ),
+                textAlign: TextAlign.center,
+              ),
     );
   }
 
@@ -289,7 +289,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         spacing: isMobile ? 12 : 16,
         runSpacing: isMobile ? 12 : 16,
         alignment: WrapAlignment.center,
-        children: [
+                children: [
           _buildPrimaryButton(
             context,
             'View Projects',
@@ -393,7 +393,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   Widget _buildIconButton(BuildContext context, String text, IconData icon, VoidCallback onPressed, bool isMobile) {
     return Container(
-      constraints: BoxConstraints(
+          constraints: BoxConstraints(
         minWidth: isMobile ? 100 : 120,
         maxWidth: isMobile ? 130 : 160,
       ),
@@ -454,38 +454,38 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         final crossAxisCount = isMobile ? 1 : (isTablet ? 2 : 3);
         final childAspectRatio = isMobile ? 3.5 : (isTablet ? 2.5 : 1.2);
         
-        return GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+                  return GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: crossAxisCount,
           crossAxisSpacing: isMobile ? 16 : 24,
           mainAxisSpacing: isMobile ? 16 : 24,
           childAspectRatio: childAspectRatio,
-          children: [
+                    children: [
             _buildStatCard(
-              context,
+                        context,
               '${ResumeData.experiences.length}',
               'Years Experience',
               Icons.work_outline,
               AppColors.sunshine,
             ),
             _buildStatCard(
-              context,
+                        context,
               '${ResumeData.projects.length}',
               'Projects Completed',
-              Icons.code,
+                        Icons.code,
               AppColors.night,
-            ),
+                      ),
             _buildStatCard(
-              context,
+                        context,
               '${ResumeData.skills.length}+',
-              'Technologies',
-              Icons.settings,
+                        'Technologies',
+                        Icons.settings,
               AppColors.sunshine,
-            ),
-          ],
-        );
-      },
+                      ),
+                    ],
+                  );
+                },
     );
   }
 
