@@ -1,13 +1,16 @@
 {
-    "name": "visual_resume",
-    "short_name": "visual_resume",
+    "name": "Sarath Krishnan P V - Flutter Developer Portfolio",
+    "short_name": "Sarath Portfolio",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#F7F7FF",
+    "theme_color": "#F7F7FF",
+    "description": "Professional Flutter Developer Portfolio showcasing mobile app development expertise and projects.",
+    "orientation": "any",
     "prefer_related_applications": false,
+    "scope": "/",
+    "lang": "en",
+    "categories": ["portfolio", "developer", "flutter", "mobile"],
     "icons": [
         {
             "src": "icons/Icon-192.png",
@@ -30,6 +33,14 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "wide"
         }
     ]
 }

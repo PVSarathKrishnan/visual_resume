@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -18,21 +18,133 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title>Sarath Krishnan P V - Flutter Developer Portfolio</title>
+  <meta name="description" content="Flutter Developer with 2 years of experience creating high-quality mobile applications. Passionate about clean UI/UX design and scalable architecture.">
+  <meta name="keywords" content="Flutter Developer, Mobile App Developer, Dart, Firebase, GraphQL, UI/UX Design, Sarath Krishnan">
+  <meta name="author" content="Sarath Krishnan P V">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Sarath Krishnan P V - Flutter Developer">
+  <meta property="og:description" content="Professional Flutter Developer with expertise in mobile app development, clean architecture, and modern UI/UX design.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://your-domain.com">
+  <meta property="og:image" content="https://your-domain.com/icons/Icon-512.png">
+  <meta property="og:site_name" content="Sarath Krishnan P V Portfolio">
+  
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sarath Krishnan P V - Flutter Developer">
+  <meta name="twitter:description" content="Professional Flutter Developer Portfolio showcasing mobile app development expertise.">
+  <meta name="twitter:image" content="https://your-domain.com/icons/Icon-512.png">
+  
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="visual_resume">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sarath Krishnan P V">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#F7F7FF">
+  <meta name="msapplication-navbutton-color" content="#F7F7FF">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>visual_resume</title>
+  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+  
+  <!-- Preload Critical Resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Sarath Krishnan P V",
+    "jobTitle": "Flutter Developer",
+    "description": "Flutter Developer with 2 years of experience creating high-quality mobile applications",
+    "url": "https://your-domain.com",
+    "sameAs": [
+      "https://linkedin.com/in/sarath-krishnan-p-v",
+      "https://github.com/your-username"
+    ],
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Trivandrum",
+      "addressCountry": "India"
+    },
+    "email": "pvsarathkrishnan@gmail.com",
+    "telephone": "+91 90745 39022"
+  }
+  </script>
+
+  <style>
+    /* Loading Screen Styles */
+    .loading-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #F7F7FF;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #071108;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #071108;
+      font-size: 16px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Hide loading screen when Flutter loads */
+    .flutter-loaded .loading-container {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <!-- Loading Screen -->
+  <div class="loading-container" id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading Portfolio...</div>
+  </div>
+
+  <!-- Flutter App -->
+  <script>
+    // Hide loading screen when Flutter loads
+    window.addEventListener('flutter-first-frame', function () {
+      document.body.classList.add('flutter-loaded');
+    });
+  </script>
+  
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

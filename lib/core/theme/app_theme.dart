@@ -1,37 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_constants.dart';
+import '../constants/app_colors.dart';
 
 /// App Theme Configuration
 class AppTheme {
   // Private constructor to prevent instantiation
   AppTheme._();
 
-  // Color Scheme
-  static const Color primaryColor = Color(0xFF2196F3);
-  static const Color secondaryColor = Color(0xFF03DAC6);
-  static const Color accentColor = Color(0xFFFF5722);
-  
+  // Palette comes from AppColors
+  static const Color primaryColor = AppColors.night;
+  static const Color secondaryColor = AppColors.sunshine;
+
   // Light Theme Colors
-  static const Color lightBackgroundColor = Color(0xFFF5F5F5);
-  static const Color lightSurfaceColor = Colors.white;
-  static const Color lightTextColor = Color(0xFF212121);
-  static const Color lightSecondaryTextColor = Color(0xFF757575);
+  static const Color lightBackgroundColor = AppColors.ghostWhite;
+  static const Color lightSurfaceColor = AppColors.ghostWhite;
+  static const Color lightTextColor = AppColors.night;
+  static const Color lightSecondaryTextColor = Color(0xFF666666);
   
   // Dark Theme Colors
-  static const Color darkBackgroundColor = Color(0xFF121212);
-  static const Color darkSurfaceColor = Color(0xFF1E1E1E);
-  static const Color darkTextColor = Colors.white;
+  static const Color darkBackgroundColor = AppColors.night;
+  static const Color darkSurfaceColor = AppColors.night;
+  static const Color darkTextColor = AppColors.ghostWhite;
   static const Color darkSecondaryTextColor = Color(0xFFB0B0B0);
 
   /// Light Theme Configuration
   static ThemeData get lightTheme {
-    final colorScheme = ColorScheme.fromSeed(
+    // Custom light color scheme derived from our seed but with richer surfaces
+    final baseLightScheme = ColorScheme.fromSeed(
       seedColor: primaryColor,
       brightness: Brightness.light,
+    );
+
+    final colorScheme = baseLightScheme.copyWith(
+      background: lightBackgroundColor,
       surface: lightSurfaceColor,
-      onSurface: lightTextColor,
       secondary: secondaryColor,
+      primaryContainer: lightSurfaceColor,
+      secondaryContainer: lightSurfaceColor,
     );
 
     return ThemeData(
@@ -56,20 +62,18 @@ class AppTheme {
       ),
       
       // Card Theme
-      cardTheme: CardTheme(
-        elevation: AppConstants.elevationM,
-        color: lightSurfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.radiusL),
-        ),
+      cardTheme: const CardTheme(
+        elevation: 0,
+        color: Colors.white,
+        margin: EdgeInsets.zero,
       ),
       
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          elevation: AppConstants.elevationM,
+          foregroundColor: AppColors.ghostWhite,
+          elevation: 0,
           padding: const EdgeInsets.symmetric(
             horizontal: AppConstants.spacingL,
             vertical: AppConstants.spacingM,
@@ -161,12 +165,18 @@ class AppTheme {
 
   /// Dark Theme Configuration
   static ThemeData get darkTheme {
-    final colorScheme = ColorScheme.fromSeed(
+    // Custom dark color scheme with vibrant accent containers
+    final baseDarkScheme = ColorScheme.fromSeed(
       seedColor: primaryColor,
       brightness: Brightness.dark,
+    );
+
+    final colorScheme = baseDarkScheme.copyWith(
+      background: darkBackgroundColor,
       surface: darkSurfaceColor,
-      onSurface: darkTextColor,
       secondary: secondaryColor,
+      primaryContainer: darkSurfaceColor,
+      secondaryContainer: darkSurfaceColor,
     );
 
     return ThemeData(
@@ -191,20 +201,18 @@ class AppTheme {
       ),
       
       // Card Theme
-      cardTheme: CardTheme(
-        elevation: AppConstants.elevationM,
-        color: darkSurfaceColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConstants.radiusL),
-        ),
+      cardTheme: const CardTheme(
+        elevation: 0,
+        color: Colors.black,
+        margin: EdgeInsets.zero,
       ),
       
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryColor,
-          foregroundColor: Colors.white,
-          elevation: AppConstants.elevationM,
+          backgroundColor: AppColors.ghostWhite,
+          foregroundColor: AppColors.night,
+          elevation: 0,
           padding: const EdgeInsets.symmetric(
             horizontal: AppConstants.spacingL,
             vertical: AppConstants.spacingM,
@@ -241,7 +249,7 @@ class AppTheme {
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: primaryColor,
+          foregroundColor: AppColors.ghostWhite,
           padding: const EdgeInsets.symmetric(
             horizontal: AppConstants.spacingL,
             vertical: AppConstants.spacingM,

@@ -3,8 +3,8 @@ class AppConstants {
   // App Information
   static const String appName = 'Visual Resume';
   static const String appVersion = '1.0.0';
-  static const String developerName = 'Your Name';
-  static const String developerEmail = 'your.email@example.com';
+  static const String developerName = 'Sarath Krishnan P V';
+  static const String developerEmail = 'pvsarathkrishnan@gmail.com';
 
   // API Constants
   static const String baseUrl = 'https://api.yourresume.com';
@@ -72,11 +72,11 @@ class AppConstants {
   static const double maxTabletContentWidth = 800.0;
 
   // Contact Information (Update with your details)
-  static const String linkedInUrl = 'https://linkedin.com/in/yourprofile';
+  static const String linkedInUrl = 'https://linkedin.com/in/sarath-krishnan-p-v';
   static const String githubUrl = 'https://github.com/yourusername';
   static const String portfolioUrl = 'https://yourportfolio.com';
-  static const String phoneNumber = '+1234567890';
-  static const String location = 'Your City, Country';
+  static const String phoneNumber = '+91 9074539022';
+  static const String location = 'Trivandrum, India';
 
   // Social Media
   static const String twitterUrl = 'https://twitter.com/yourusername';

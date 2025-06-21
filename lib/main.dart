@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'core/bindings/initial_binding.dart';
 import 'core/routes/app_routes.dart';
 import 'core/services/navigation_service.dart';
 import 'core/theme/app_theme.dart';
-import 'core/constants/app_constants.dart';
+import 'core/constants/app_strings.dart';
 
 void main() {
+  // Initialize core services
+  CoreServices.init();
+
   runApp(const VisualResumeApp());
 }
 
@@ -15,33 +17,24 @@ class VisualResumeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    return MaterialApp(
       // App Configuration
-      title: AppConstants.appName,
+      title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
       
       // Navigation
       navigatorKey: NavigationService.instance.navigatorKey,
       initialRoute: AppRoutes.initial,
       onGenerateRoute: AppRoutes.generateRoute,
-      
-      // Bindings
-      initialBinding: InitialBinding(),
+      onUnknownRoute: AppRoutes.unknownRoute,
       
       // Theme Configuration
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       
-      // Localization (you can add more locales later)
+      // Localization
       locale: const Locale('en', 'US'),
-      fallbackLocale: const Locale('en', 'US'),
-      
-      // Error handling
-      unknownRoute: GetPage(
-        name: '/notfound',
-        page: () => const NotFoundView(),
-      ),
       
       // Web configuration for better SEO and performance
       builder: (context, child) {

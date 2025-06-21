@@ -21,107 +21,50 @@ class AppRoutes {
   // Initial Route
   static const String initial = splash;
 
-  // Route Generator
+  /// Standard route generation method
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-            case splash:
-        return _buildRoute(
-          const SplashView(),
-          settings: settings,
-        );
-        
+      case splash:
+        return _createRoute(const SplashView());
       case home:
-        return _buildRoute(
-          const HomeView(),
-          settings: settings,
-        );
-        
+        return _createRoute(const HomeView());
       case about:
-        return _buildRoute(
-          const AboutView(),
-          settings: settings,
-        );
-        
+        return _createRoute(const AboutView());
       case experience:
-        return _buildRoute(
-          const ExperienceView(),
-          settings: settings,
-        );
-        
+        return _createRoute(const ExperienceView());
       case projects:
-        return _buildRoute(
-          const ProjectsView(),
-          settings: settings,
-        );
-        
+        return _createRoute(const ProjectsView());
       case skills:
-        return _buildRoute(
-          const SkillsView(),
-          settings: settings,
-        );
-        
+        return _createRoute(const SkillsView());
       case contact:
-        return _buildRoute(
-          const ContactView(),
-          settings: settings,
-        );
-        
+        return _createRoute(const ContactView());
       default:
-        return _buildRoute(
-          const NotFoundView(),
-          settings: settings,
-        );
+        return _createRoute(const NotFoundView());
     }
   }
 
-  // Build Route with custom transitions
-  static PageRoute<T> _buildRoute<T>(
-    Widget child, {
-    RouteSettings? settings,
-    bool fullscreenDialog = false,
-  }) {
-    return PageRouteBuilder<T>(
-      settings: settings,
-      fullscreenDialog: fullscreenDialog,
-      pageBuilder: (context, animation, secondaryAnimation) => child,
+  /// Custom page route with slide transition
+  static Route<dynamic> _createRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return _slideTransition(animation, child);
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOut;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
       },
       transitionDuration: const Duration(milliseconds: 300),
-      reverseTransitionDuration: const Duration(milliseconds: 300),
     );
   }
 
-  // Slide transition animation
-  static Widget _slideTransition(Animation<double> animation, Widget child) {
-    const begin = Offset(1.0, 0.0);
-    const end = Offset.zero;
-    const curve = Curves.easeInOut;
-
-    var tween = Tween(begin: begin, end: end).chain(
-      CurveTween(curve: curve),
-    );
-
-    return SlideTransition(
-      position: animation.drive(tween),
-      child: child,
-    );
-  }
-
-  // Fade transition animation
-  static Widget _fadeTransition(Animation<double> animation, Widget child) {
-    return FadeTransition(
-      opacity: animation,
-      child: child,
-    );
-  }
-
-  // Scale transition animation
-  static Widget _scaleTransition(Animation<double> animation, Widget child) {
-    return ScaleTransition(
-      scale: animation,
-      child: child,
-    );
+  /// Not Found View for undefined routes
+  static Route<dynamic> unknownRoute(RouteSettings settings) {
+    return _createRoute(const NotFoundView());
   }
 
   /// Get all available routes
