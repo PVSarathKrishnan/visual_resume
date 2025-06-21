@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'core/bindings/initial_binding.dart';
 import 'core/routes/app_routes.dart';
 import 'core/services/navigation_service.dart';
@@ -6,9 +7,6 @@ import 'core/theme/app_theme.dart';
 import 'core/constants/app_strings.dart';
 
 void main() {
-  // Initialize core services
-  CoreServices.init();
-
   runApp(const VisualResumeApp());
 }
 
@@ -17,7 +15,7 @@ class VisualResumeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       // App Configuration
       title: AppStrings.appName,
       debugShowCheckedModeBanner: false,
@@ -27,6 +25,9 @@ class VisualResumeApp extends StatelessWidget {
       initialRoute: AppRoutes.initial,
       onGenerateRoute: AppRoutes.generateRoute,
       onUnknownRoute: AppRoutes.unknownRoute,
+      
+      // GetX Bindings
+      initialBinding: InitialBinding(),
       
       // Theme Configuration
       theme: AppTheme.lightTheme,

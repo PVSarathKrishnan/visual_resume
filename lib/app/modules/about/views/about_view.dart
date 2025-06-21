@@ -1,470 +1,464 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../../../../core/constants/resume_data.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/utils/responsive.dart';
 
-class AboutView extends StatefulWidget {
+class AboutView extends StatelessWidget {
   const AboutView({super.key});
 
   @override
-  State<AboutView> createState() => _AboutViewState();
-}
-
-class _AboutViewState extends State<AboutView> with TickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-    
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
-    
-    _controller.forward();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    
     return Scaffold(
-      backgroundColor: AppColors.ghostWhite,
-      appBar: _buildAppBar(context),
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return FadeTransition(
-            opacity: _fadeAnimation,
-            child: SlideTransition(
-              position: _slideAnimation,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 24 : 64,
-                  vertical: 40,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeroSection(context, isMobile),
-                    const SizedBox(height: 80),
-                    _buildPersonalInfo(context, isMobile),
-                    const SizedBox(height: 80),
-                    _buildEducationSection(context, isMobile),
-                    const SizedBox(height: 80),
-                    _buildSkillsPreview(context, isMobile),
-                    const SizedBox(height: 60),
-                  ],
-                ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.ghostWhite,
+              Color(0xFFFFFDF7),
+              Color(0xFFFFF9E6),
+              AppColors.ghostWhite,
+            ],
+            stops: [0.0, 0.3, 0.7, 1.0],
+          ),
+        ),
+        child: CustomScrollView(
+          slivers: [
+            _buildSliverAppBar(context),
+            SliverPadding(
+              padding: const EdgeInsets.all(32),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  _buildHeroSection(context),
+                  const SizedBox(height: 60),
+                  _buildEducationSection(context),
+                  const SizedBox(height: 60),
+                  _buildPersonalInfoSection(context),
+                ]),
               ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
+  Widget _buildSliverAppBar(BuildContext context) {
+    return SliverAppBar(
+      expandedHeight: 200,
+      floating: false,
+      pinned: true,
       backgroundColor: Colors.transparent,
       elevation: 0,
-      leading: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: AppColors.ghostWhite.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.night.withOpacity(0.1)),
+      flexibleSpace: FlexibleSpaceBar(
+        title: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [AppColors.night, AppColors.sunshine],
+          ).createShader(bounds),
+          child: const Text(
+            'About Me',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        child: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: AppColors.night),
-          onPressed: () => Navigator.of(context).pop(),
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.sunshine.withOpacity(0.1),
+                Colors.transparent,
+              ],
+            ),
+          ),
         ),
       ),
-      title: Text(
-        'About Me',
-        style: TextStyle(
-          color: AppColors.night,
-          fontWeight: FontWeight.w700,
-          fontSize: 20,
-        ),
-      ),
-      centerTitle: true,
     );
   }
 
-  Widget _buildHeroSection(BuildContext context, bool isMobile) {
+  Widget _buildHeroSection(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(isMobile ? 32 : 48),
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.night,
-            AppColors.night.withOpacity(0.9),
+            Colors.white.withOpacity(0.9),
+            Colors.white.withOpacity(0.7),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.night.withOpacity(0.3),
+            color: AppColors.sunshine.withOpacity(0.2),
             blurRadius: 30,
             offset: const Offset(0, 15),
           ),
         ],
       ),
-      child: Column(
-        children: [
-          Container(
-            width: isMobile ? 100 : 120,
-            height: isMobile ? 100 : 120,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.sunshine, width: 3),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.sunshine.withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [AppColors.sunshine, Color(0xFFFFD700)],
+                      ),
+                      boxShadow: [
+                                  BoxShadow(
+            color: AppColors.sunshine.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.person,
+                      size: 40,
+                      color: AppColors.night,
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [AppColors.night, AppColors.sunshine],
+                          ).createShader(bounds),
+                          child: Text(
+                            ResumeData.fullName,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.sunshine.withOpacity(0.2),
+                                AppColors.sunshine.withOpacity(0.1),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: AppColors.sunshine.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Text(
+                            ResumeData.title,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.night,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'About',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.night.withOpacity(0.8),
                 ),
-              ],
-            ),
-            child: CircleAvatar(
-              radius: isMobile ? 47 : 57,
-              backgroundColor: AppColors.sunshine.withOpacity(0.2),
-              child: Icon(
-                Icons.person,
-                size: isMobile ? 40 : 50,
-                color: AppColors.ghostWhite,
               ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            ResumeData.fullName,
-            style: Theme.of(context).textTheme.displayMedium?.copyWith(
-              color: AppColors.ghostWhite,
-              fontWeight: FontWeight.w800,
-              fontSize: isMobile ? 28 : 36,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.sunshine.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.sunshine.withOpacity(0.5)),
-            ),
-            child: Text(
-              ResumeData.title,
-              style: TextStyle(
-                color: AppColors.sunshine,
-                fontWeight: FontWeight.w600,
-                fontSize: isMobile ? 14 : 16,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            '📍 ${ResumeData.location}',
-            style: TextStyle(
-              color: AppColors.ghostWhite.withOpacity(0.8),
-              fontSize: isMobile ? 14 : 16,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPersonalInfo(BuildContext context, bool isMobile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionTitle('Personal Summary', Icons.person_outline),
-        const SizedBox(height: 24),
-        Container(
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: AppColors.ghostWhite,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.night.withOpacity(0.1)),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.night.withOpacity(0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+              const SizedBox(height: 16),
+              Text(
+                ResumeData.summary,
+                style: TextStyle(
+                  fontSize: 16,
+                  height: 1.6,
+                  color: AppColors.night.withOpacity(0.7),
+                ),
               ),
             ],
           ),
-          child: Text(
-            ResumeData.summary,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontSize: isMobile ? 16 : 18,
-              height: 1.8,
-              color: AppColors.night.withOpacity(0.8),
-            ),
-          ),
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildEducationSection(BuildContext context, bool isMobile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionTitle('Education', Icons.school_outlined),
-        const SizedBox(height: 24),
-        ...ResumeData.education.map((edu) => _buildEducationCard(context, edu, isMobile)),
-      ],
-    );
-  }
-
-  Widget _buildEducationCard(BuildContext context, Education education, bool isMobile) {
+  Widget _buildEducationSection(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(isMobile ? 20 : 24),
+      padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: AppColors.ghostWhite,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.sunshine.withOpacity(0.2)),
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withOpacity(0.9),
+            Colors.white.withOpacity(0.7),
+          ],
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.sunshine.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: AppColors.sunshine.withOpacity(0.2),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: isMobile ? 50 : 60,
-                height: isMobile ? 50 : 60,
-                decoration: BoxDecoration(
-                  color: AppColors.sunshine.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: AppColors.sunshine.withOpacity(0.3)),
-                ),
-                child: Icon(
-                  Icons.school,
-                  color: AppColors.sunshine,
-                  size: isMobile ? 24 : 28,
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.sunshine, Color(0xFFFFD700)],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.school,
+                      color: AppColors.night,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [AppColors.night, AppColors.sunshine],
+                    ).createShader(bounds),
+                    child: const Text(
+                      'Education',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
+              const SizedBox(height: 24),
+              ...ResumeData.education.map((edu) => Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.sunshine.withOpacity(0.2),
+                  ),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      education.degree,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
+                      edu.degree,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                         color: AppColors.night,
-                        fontSize: isMobile ? 16 : 18,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      education.institution,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.night.withOpacity(0.8),
-                        fontWeight: FontWeight.w500,
-                        fontSize: isMobile ? 14 : 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.night.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 14,
-                      color: AppColors.night.withOpacity(0.6),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      education.period,
+                      edu.institution,
                       style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.night.withOpacity(0.8),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${edu.period} • ${edu.location}',
+                      style: TextStyle(
+                        fontSize: 14,
                         color: AppColors.night.withOpacity(0.6),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.night.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 14,
-                      color: AppColors.night.withOpacity(0.6),
-                    ),
-                    const SizedBox(width: 6),
-                    Flexible(
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.sunshine.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       child: Text(
-                        education.location,
-                        style: TextStyle(
-                          color: AppColors.night.withOpacity(0.6),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
+                        edu.grade,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.night,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.night.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  education.grade,
-                  style: TextStyle(
-                    color: AppColors.night,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
+              )).toList(),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildSkillsPreview(BuildContext context, bool isMobile) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionTitle('Core Skills', Icons.star_outline),
-        const SizedBox(height: 24),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          children: ResumeData.skills.take(8).map((skill) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.night.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.night.withOpacity(0.1)),
-              ),
-              child: Text(
-                skill,
-                style: TextStyle(
-                  color: AppColors.night,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            );
-          }).toList(),
+  Widget _buildPersonalInfoSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withOpacity(0.9),
+            Colors.white.withOpacity(0.7),
+          ],
         ),
-        const SizedBox(height: 24),
-        Center(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: AppColors.night.withOpacity(0.2)),
-            ),
-            child: TextButton.icon(
-              onPressed: () => Navigator.of(context).pushNamed('/skills'),
-              icon: Icon(Icons.arrow_forward, color: AppColors.night),
-              label: Text(
-                'View All Skills',
-                style: TextStyle(
-                  color: AppColors.night,
-                  fontWeight: FontWeight.w600,
-                ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.sunshine.withOpacity(0.2),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.sunshine, Color(0xFFFFD700)],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.info,
+                      color: AppColors.night,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [AppColors.night, AppColors.sunshine],
+                    ).createShader(bounds),
+                    child: const Text(
+                      'Personal Info',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-            ),
+              const SizedBox(height: 24),
+              _buildInfoRow(Icons.email, 'Email', ResumeData.email),
+              _buildInfoRow(Icons.phone, 'Phone', ResumeData.phone),
+              _buildInfoRow(Icons.location_on, 'Location', ResumeData.location),
+              _buildInfoRow(Icons.link, 'LinkedIn', ResumeData.linkedIn),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildSectionTitle(String title, IconData icon) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.night.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            icon,
-            color: AppColors.night,
-            size: 24,
-          ),
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.sunshine.withOpacity(0.2),
         ),
-        const SizedBox(width: 16),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            color: AppColors.night,
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.sunshine.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: AppColors.night,
+              size: 20,
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.night.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.night,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 } 

@@ -3,17 +3,33 @@ import '../services/navigation_service.dart';
 import '../services/snackbar_service.dart';
 import '../../app/modules/splash/controllers/splash_controller.dart';
 
-/// Core services initialization
-class CoreServices {
-  /// Initialize core services
-  static void init() {
+/// Initial binding for core services
+/// This binding will be loaded when the app starts
+class InitialBinding extends Bindings {
+  @override
+  void dependencies() {
+    // Register core services as singletons
+    _registerServices();
+  }
+
+  /// Register all core services
+  void _registerServices() {
     // Navigation Service
-    NavigationService.instance;
+    Get.put<NavigationService>(
+      NavigationService.instance,
+      permanent: true,
+    );
 
     // Snackbar Service
-    SnackbarService.instance;
+    Get.put<SnackbarService>(
+      SnackbarService.instance,
+      permanent: true,
+    );
 
-    // Provide SplashController for SplashView
-    Get.lazyPut<SplashController>(() => SplashController(), fenix: true);
+    // Splash Controller for GetX state management
+    Get.lazyPut<SplashController>(
+      () => SplashController(),
+      fenix: true,
+    );
   }
 } 

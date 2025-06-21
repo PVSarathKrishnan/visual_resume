@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'dart:ui';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/resume_data.dart';
 
-/// Home View - Professional Visual Resume Landing Page
+/// Home View - Stunning Visual Resume
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -14,172 +14,251 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
-  late AnimationController _heroController;
-  late AnimationController _navController;
-  late AnimationController _statsController;
-  
-  late Animation<double> _heroFadeIn;
-  late Animation<Offset> _heroSlideIn;
-  late Animation<double> _navFadeIn;
-  late Animation<double> _statsAnimation;
-  
-  bool _showFloatingNav = false;
-  final ScrollController _scrollController = ScrollController();
+  late AnimationController _heroAnimationController;
+  late AnimationController _floatingAnimationController;
+  late Animation<double> _heroAnimation;
+  late Animation<double> _floatingAnimation;
 
   @override
   void initState() {
     super.initState();
-    _initAnimations();
-    _scrollController.addListener(_onScroll);
-  }
-
-  void _initAnimations() {
-    _heroController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
+    _heroAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    
-    _navController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    
-    _statsController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+    _floatingAnimationController = AnimationController(
+      duration: const Duration(seconds: 3),
       vsync: this,
     );
 
-    _heroFadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _heroController, curve: const Interval(0.0, 0.6, curve: Curves.easeOut)),
+    _heroAnimation = CurvedAnimation(
+      parent: _heroAnimationController,
+      curve: Curves.easeOutCubic,
     );
-    
-    _heroSlideIn = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
-      CurvedAnimation(parent: _heroController, curve: const Interval(0.2, 0.8, curve: Curves.elasticOut)),
-    );
-    
-    _navFadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _navController, curve: Curves.easeInOut),
-    );
-    
-    _statsAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _statsController, curve: Curves.elasticOut),
-    );
+    _floatingAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(
+      parent: _floatingAnimationController,
+      curve: Curves.easeInOut,
+    ));
 
-    // Start animations
-    _heroController.forward();
-    Future.delayed(const Duration(milliseconds: 400), () => _navController.forward());
-  }
-
-  void _onScroll() {
-    if (_scrollController.offset > 100 && !_showFloatingNav) {
-      setState(() => _showFloatingNav = true);
-    } else if (_scrollController.offset <= 100 && _showFloatingNav) {
-      setState(() => _showFloatingNav = false);
-    }
-    
-    // Trigger stats animation when scrolled into view
-    if (_scrollController.offset > 300 && _statsController.status == AnimationStatus.dismissed) {
-      _statsController.forward();
-    }
+    _heroAnimationController.forward();
+    _floatingAnimationController.repeat(reverse: true);
   }
 
   @override
   void dispose() {
-    _heroController.dispose();
-    _navController.dispose();
-    _statsController.dispose();
-    _scrollController.dispose();
+    _heroAnimationController.dispose();
+    _floatingAnimationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.ghostWhite,
-      extendBodyBehindAppBar: true,
-      body: Stack(
+      body: Container(
+        decoration: _buildGradientBackground(),
+        child: ResponsiveLayout(
+          mobile: _buildMobileLayout(context),
+          tablet: _buildDesktopLayout(context),
+          desktop: _buildDesktopLayout(context),
+        ),
+      ),
+    );
+  }
+
+  BoxDecoration _buildGradientBackground() {
+    return const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          AppColors.ghostWhite,
+          Color(0xFFFFFDF7),
+          Color(0xFFFFF9E6),
+          AppColors.ghostWhite,
+        ],
+        stops: [0.0, 0.3, 0.7, 1.0],
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
         children: [
-          // Background gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.ghostWhite,
-                  AppColors.ghostWhite.withOpacity(0.8),
-                  AppColors.sunshine.withOpacity(0.05),
-                ],
-              ),
-            ),
-          ),
-          
-          // Main content
-          CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-          // Hero Section
-              SliverToBoxAdapter(child: _buildHeroSection(context)),
-              
-              // Stats Section
-              SliverToBoxAdapter(child: _buildStatsSection(context)),
-              
-              // About Preview Section
-              SliverToBoxAdapter(child: _buildAboutPreview(context)),
-              
-              // CTA Section
-              SliverToBoxAdapter(child: _buildCTASection(context)),
-              
-              // Footer
-              SliverToBoxAdapter(child: _buildFooter(context)),
-            ],
-          ),
-          
-          // Floating Navigation
-          _buildFloatingNavigation(context),
+          _buildMobileNavigation(context),
+          _buildHeroSection(context, true),
+          _buildSkillsSection(context, true),
+          _buildProjectsPreview(context, true),
+          _buildContactSection(context),
         ],
       ),
     );
   }
 
-  Widget _buildHeroSection(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    
+  Widget _buildDesktopLayout(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _buildDesktopNavigation(context),
+          _buildHeroSection(context, false),
+          _buildSkillsSection(context, false),
+          _buildExperienceTimeline(context),
+          _buildProjectsShowcase(context),
+          _buildContactSection(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileNavigation(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height,
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildLogo(),
+          IconButton(
+            onPressed: () => _showMobileMenu(context),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.sunshine.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.sunshine.withOpacity(0.3)),
+              ),
+              child: const Icon(Icons.menu, color: AppColors.night),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopNavigation(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildLogo(),
+          Row(
+            children: [
+              _buildNavButton('About', () => Navigator.pushNamed(context, '/about')),
+              _buildNavButton('Experience', () => Navigator.pushNamed(context, '/experience')),
+              _buildNavButton('Projects', () => Navigator.pushNamed(context, '/projects')),
+              _buildNavButton('Contact', () => Navigator.pushNamed(context, '/contact')),
+              const SizedBox(width: 20),
+              _buildGradientButton('Download CV', Icons.download, () {}),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogo() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.sunshine, Color(0xFFFFD700)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.sunshine.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Text(
+        'SK',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: AppColors.night,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavButton(String text, VoidCallback onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.night,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGradientButton(String text, IconData icon, VoidCallback onPressed) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.sunshine, Color(0xFFFFD700)],
+        ),
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.sunshine.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: AppColors.night),
+        label: Text(
+          text,
+          style: const TextStyle(
+            color: AppColors.night,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroSection(BuildContext context, bool isMobile) {
+    return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 24 : 64,
-        vertical: 40,
+        horizontal: isMobile ? 20 : 50,
+        vertical: isMobile ? 40 : 80,
       ),
       child: AnimatedBuilder(
-        animation: _heroController,
+        animation: _heroAnimation,
         builder: (context, child) {
-          return FadeTransition(
-            opacity: _heroFadeIn,
-            child: SlideTransition(
-              position: _heroSlideIn,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                  // Profile Image with Glassmorphism
-                  _buildProfileSection(context, isMobile),
-                  
-                  SizedBox(height: isMobile ? 40 : 60),
-                  
-                  // Name and Title
-                  _buildNameSection(context, isMobile),
-                  
-                  SizedBox(height: isMobile ? 24 : 32),
-                  
-                  // Summary
-                  _buildSummarySection(context, isMobile),
-                  
-                  SizedBox(height: isMobile ? 40 : 60),
-                  
-                  // Action Buttons
-                  _buildActionButtons(context, isMobile),
-                ],
-              ),
+          return Transform.scale(
+            scale: 0.8 + (_heroAnimation.value * 0.2),
+            child: Opacity(
+              opacity: _heroAnimation.value,
+              child: isMobile
+                  ? _buildMobileHeroContent(context)
+                  : _buildDesktopHeroContent(context),
             ),
           );
         },
@@ -187,462 +266,599 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildProfileSection(BuildContext context, bool isMobile) {
+  Widget _buildMobileHeroContent(BuildContext context) {
+    return Column(
+      children: [
+        _buildProfileAvatar(100),
+        const SizedBox(height: 30),
+        _buildHeroText(context, true),
+        const SizedBox(height: 30),
+        _buildHeroButtons(context, true),
+      ],
+    );
+  }
+
+  Widget _buildDesktopHeroContent(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeroText(context, false),
+              const SizedBox(height: 40),
+              _buildHeroButtons(context, false),
+            ],
+          ),
+        ),
+        const SizedBox(width: 80),
+        Expanded(
+          flex: 2,
+          child: AnimatedBuilder(
+            animation: _floatingAnimation,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(0, _floatingAnimation.value * 20),
+                child: _buildProfileAvatar(200),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProfileAvatar(double size) {
     return Container(
-      width: isMobile ? 140 : 180,
-      height: isMobile ? 140 : 180,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            AppColors.sunshine.withOpacity(0.3),
-            AppColors.night.withOpacity(0.1),
+            AppColors.sunshine,
+            Color(0xFFFFD700),
+            AppColors.sunshine,
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.night.withOpacity(0.1),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
+            color: AppColors.sunshine.withOpacity(0.3),
+            blurRadius: 25,
+            offset: const Offset(0, 12),
+          ),
+          BoxShadow(
+            color: Colors.white.withOpacity(0.8),
+            blurRadius: 20,
+            offset: const Offset(-10, -10),
           ),
         ],
       ),
-        child: Container(
+      child: Container(
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.night,
-          border: Border.all(
-            color: AppColors.sunshine.withOpacity(0.3),
-            width: 2,
-          ),
-        ),
-                child: Icon(
-                  Icons.person,
-                  size: isMobile ? 60 : 80,
           color: AppColors.ghostWhite,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Icon(
+          Icons.person,
+          size: size * 0.5,
+          color: AppColors.night.withOpacity(0.7),
         ),
       ),
     );
   }
 
-  Widget _buildNameSection(BuildContext context, bool isMobile) {
+  Widget _buildHeroText(BuildContext context, bool isMobile) {
     return Column(
+      crossAxisAlignment: isMobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
-              Text(
-          ResumeData.fullName,
-          style: Theme.of(context).textTheme.displayLarge?.copyWith(
-            fontSize: isMobile ? 32 : 48,
-            fontWeight: FontWeight.w800,
-            color: AppColors.night,
-            letterSpacing: -1,
-                ),
-                textAlign: TextAlign.center,
-              ),
-        const SizedBox(height: 12),
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [AppColors.night, Color(0xFF333333)],
+          ).createShader(bounds),
+          child: Text(
+            'Hello, I\'m',
+            style: TextStyle(
+              fontSize: isMobile ? 18 : 24,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+            textAlign: isMobile ? TextAlign.center : TextAlign.left,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [AppColors.night, AppColors.sunshine, AppColors.night],
+          ).createShader(bounds),
+          child: Text(
+            ResumeData.fullName,
+            style: TextStyle(
+              fontSize: isMobile ? 32 : 48,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              height: 1.2,
+            ),
+            textAlign: isMobile ? TextAlign.center : TextAlign.left,
+          ),
+        ),
+        const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.sunshine.withOpacity(0.1),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.sunshine.withOpacity(0.15),
+                AppColors.sunshine.withOpacity(0.08),
+              ],
+            ),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: AppColors.sunshine.withOpacity(0.3),
-              width: 1,
             ),
           ),
           child: Text(
             ResumeData.title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            style: TextStyle(
               fontSize: isMobile ? 16 : 20,
               fontWeight: FontWeight.w600,
               color: AppColors.night,
-              letterSpacing: 0.5,
             ),
           ),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          ResumeData.summary,
+          style: TextStyle(
+            fontSize: isMobile ? 14 : 18,
+            color: AppColors.night.withOpacity(0.7),
+            height: 1.6,
+          ),
+          textAlign: isMobile ? TextAlign.center : TextAlign.left,
+          maxLines: 4,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
   }
 
-  Widget _buildSummarySection(BuildContext context, bool isMobile) {
-    return Container(
-      constraints: BoxConstraints(maxWidth: isMobile ? 320 : 600),
-      child: Text(
-        ResumeData.summary,
-        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          fontSize: isMobile ? 16 : 18,
-          height: 1.6,
-          color: AppColors.night.withOpacity(0.8),
-                ),
-                textAlign: TextAlign.center,
-              ),
+  Widget _buildHeroButtons(BuildContext context, bool isMobile) {
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+      children: [
+        _buildGradientButton('View Projects', Icons.rocket_launch, () {
+          Navigator.pushNamed(context, '/projects');
+        }),
+        _buildOutlineButton('Contact Me', Icons.message, () {
+          Navigator.pushNamed(context, '/contact');
+        }),
+      ],
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, bool isMobile) {
+  Widget _buildOutlineButton(String text, IconData icon, VoidCallback onPressed) {
     return Container(
-      width: double.infinity,
-      constraints: BoxConstraints(
-        maxWidth: isMobile ? double.infinity : 600,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: AppColors.night.withOpacity(0.3)),
+        color: Colors.white.withOpacity(0.8),
       ),
-      child: Wrap(
-        spacing: isMobile ? 12 : 16,
-        runSpacing: isMobile ? 12 : 16,
-        alignment: WrapAlignment.center,
-                children: [
-          _buildPrimaryButton(
-            context,
-            'View Projects',
-            Icons.work_outline,
-            () => Navigator.of(context).pushNamed('/projects'),
-            isMobile,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: AppColors.night),
+        label: Text(
+          text,
+          style: const TextStyle(
+            color: AppColors.night,
+            fontWeight: FontWeight.w600,
           ),
-          _buildSecondaryButton(
-            context,
-            'Contact Me',
-            Icons.mail_outline,
-            () => Navigator.of(context).pushNamed('/contact'),
-            isMobile,
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
           ),
-          _buildIconButton(
-            context,
-            'Resume',
-            Icons.download_outlined,
-            () => _downloadResume(),
-            isMobile,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkillsSection(BuildContext context, bool isMobile) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 50,
+        vertical: 60,
+      ),
+      child: Column(
+        children: [
+          _buildSectionTitle('Skills & Technologies'),
+          const SizedBox(height: 40),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: ResumeData.skills.map((skill) => _buildSkillChip(skill)).toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPrimaryButton(BuildContext context, String text, IconData icon, VoidCallback onPressed, bool isMobile) {
-    return Container(
-      constraints: BoxConstraints(
-        minWidth: isMobile ? 120 : 140,
-        maxWidth: isMobile ? 150 : 200,
+  Widget _buildSectionTitle(String title) {
+    return ShaderMask(
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: [AppColors.night, AppColors.sunshine, AppColors.night],
+      ).createShader(bounds),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
+    );
+  }
+
+  Widget _buildSkillChip(String skill) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
         gradient: LinearGradient(
-          colors: [AppColors.night, AppColors.night.withOpacity(0.8)],
+          colors: [
+            Colors.white.withOpacity(0.9),
+            Colors.white.withOpacity(0.7),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.sunshine.withOpacity(0.3),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.night.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: AppColors.sunshine.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: isMobile ? 18 : 20),
-        label: Text(
-          text,
-          style: TextStyle(fontSize: isMobile ? 12 : 14),
-          overflow: TextOverflow.ellipsis,
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: AppColors.ghostWhite,
-          shadowColor: Colors.transparent,
-          padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 16 : 24, 
-            vertical: isMobile ? 12 : 16,
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      child: Text(
+        skill,
+        style: const TextStyle(
+          color: AppColors.night,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
 
-  Widget _buildSecondaryButton(BuildContext context, String text, IconData icon, VoidCallback onPressed, [bool? isMobile]) {
-    final mobile = isMobile ?? Responsive.isMobile(context);
-    return Container(
-      constraints: BoxConstraints(
-        minWidth: mobile ? 120 : 140,
-        maxWidth: mobile ? 150 : 200,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: AppColors.night.withOpacity(0.2)),
-        color: AppColors.ghostWhite.withOpacity(0.8),
-      ),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: mobile ? 18 : 20),
-        label: Text(
-          text,
-          style: TextStyle(fontSize: mobile ? 12 : 14),
-          overflow: TextOverflow.ellipsis,
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: AppColors.night,
-          shadowColor: Colors.transparent,
-          padding: EdgeInsets.symmetric(
-            horizontal: mobile ? 16 : 24, 
-            vertical: mobile ? 12 : 16,
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIconButton(BuildContext context, String text, IconData icon, VoidCallback onPressed, bool isMobile) {
-    return Container(
-          constraints: BoxConstraints(
-        minWidth: isMobile ? 100 : 120,
-        maxWidth: isMobile ? 130 : 160,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        color: AppColors.sunshine.withOpacity(0.1),
-        border: Border.all(color: AppColors.sunshine.withOpacity(0.3)),
-      ),
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: isMobile ? 18 : 20),
-        label: Text(
-          text,
-          style: TextStyle(fontSize: isMobile ? 12 : 14),
-          overflow: TextOverflow.ellipsis,
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: AppColors.night,
-          shadowColor: Colors.transparent,
-          padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 16 : 24, 
-            vertical: isMobile ? 12 : 16,
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatsSection(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    
+  Widget _buildProjectsPreview(BuildContext context, bool isMobile) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 24 : 64,
-        vertical: isMobile ? 60 : 100,
+        horizontal: isMobile ? 20 : 50,
+        vertical: 60,
       ),
-      child: AnimatedBuilder(
-        animation: _statsAnimation,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: 0.8 + (_statsAnimation.value * 0.2),
-            child: Opacity(
-              opacity: _statsAnimation.value,
-              child: _buildStatsGrid(context, isMobile),
+      child: Column(
+        children: [
+          _buildSectionTitle('Featured Projects'),
+          const SizedBox(height: 40),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isMobile ? 1 : 2,
+              crossAxisSpacing: 20,
+              mainAxisSpacing: 20,
+              childAspectRatio: 1.2,
             ),
-          );
-        },
+            itemCount: ResumeData.projects.take(4).length,
+            itemBuilder: (context, index) {
+              final project = ResumeData.projects[index];
+              return _buildProjectCard(project);
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildStatsGrid(BuildContext context, bool isMobile) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isTablet = Responsive.isTablet(context);
-        final crossAxisCount = isMobile ? 1 : (isTablet ? 2 : 3);
-        final childAspectRatio = isMobile ? 3.5 : (isTablet ? 2.5 : 1.2);
-        
-                  return GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: crossAxisCount,
-          crossAxisSpacing: isMobile ? 16 : 24,
-          mainAxisSpacing: isMobile ? 16 : 24,
-          childAspectRatio: childAspectRatio,
-                    children: [
-            _buildStatCard(
-                        context,
-              '${ResumeData.experiences.length}',
-              'Years Experience',
-              Icons.work_outline,
-              AppColors.sunshine,
+  Widget _buildProjectsShowcase(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 60),
+      child: Column(
+        children: [
+          _buildSectionTitle('Featured Projects'),
+          const SizedBox(height: 40),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 30,
+              mainAxisSpacing: 30,
+              childAspectRatio: 1.0,
             ),
-            _buildStatCard(
-                        context,
-              '${ResumeData.projects.length}',
-              'Projects Completed',
-                        Icons.code,
-              AppColors.night,
-                      ),
-            _buildStatCard(
-                        context,
-              '${ResumeData.skills.length}+',
-                        'Technologies',
-                        Icons.settings,
-              AppColors.sunshine,
-                      ),
-                    ],
-                  );
-                },
+            itemCount: ResumeData.projects.length,
+            itemBuilder: (context, index) {
+              final project = ResumeData.projects[index];
+              return _buildProjectCard(project);
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String number, String label, IconData icon, Color accentColor) {
+  Widget _buildProjectCard(Project project) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: AppColors.ghostWhite,
-        border: Border.all(color: accentColor.withOpacity(0.1)),
-        boxShadow: [
-          BoxShadow(
-            color: accentColor.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 32,
-              color: accentColor,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              number,
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: AppColors.night,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.night.withOpacity(0.7),
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAboutPreview(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 24 : 64,
-        vertical: isMobile ? 60 : 100,
-      ),
-      child: Column(
-        children: [
-          Text(
-            'About Me',
-            style: Theme.of(context).textTheme.displayMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: AppColors.night,
-            ),
-          ),
-          const SizedBox(height: 40),
-          Container(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: Text(
-              ResumeData.summary,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontSize: 18,
-                height: 1.8,
-                color: AppColors.night.withOpacity(0.8),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 40),
-          _buildSecondaryButton(
-            context,
-            'Learn More',
-            Icons.arrow_forward,
-            () => Navigator.of(context).pushNamed('/about'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCTASection(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 64),
-      padding: EdgeInsets.all(isMobile ? 40 : 60),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
         gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            AppColors.night,
-            AppColors.night.withOpacity(0.9),
+            Colors.white.withOpacity(0.9),
+            Colors.white.withOpacity(0.7),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.night.withOpacity(0.3),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
+            color: AppColors.sunshine.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white.withOpacity(0.3),
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.sunshine, Color(0xFFFFD700)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.code,
+                    color: AppColors.night,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  project.name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.night,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  project.year,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.night.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: Text(
+                    project.description,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.night.withOpacity(0.8),
+                      height: 1.4,
+                    ),
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExperienceTimeline(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 60),
       child: Column(
         children: [
-          Text(
-            'Ready to Work Together?',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              color: AppColors.ghostWhite,
-              fontWeight: FontWeight.w800,
+          _buildSectionTitle('Experience'),
+          const SizedBox(height: 40),
+          ...ResumeData.experiences.asMap().entries.map((entry) {
+            final index = entry.key;
+            final exp = entry.value;
+            return _buildTimelineItem(exp, index == ResumeData.experiences.length - 1);
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineItem(Experience experience, bool isLast) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [AppColors.sunshine, Color(0xFFFFD700)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.sunshine.withOpacity(0.4),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Let\'s create something amazing together',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: AppColors.ghostWhite.withOpacity(0.8),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
-          Container(
+            if (!isLast)
+              Container(
+                width: 2,
+                height: 100,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      AppColors.sunshine.withOpacity(0.5),
+                      AppColors.sunshine.withOpacity(0.1),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 40),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              color: AppColors.sunshine,
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.9),
+                  Colors.white.withOpacity(0.7),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.sunshine.withOpacity(0.2),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.sunshine.withOpacity(0.3),
-                  blurRadius: 20,
+                  color: AppColors.sunshine.withOpacity(0.1),
+                  blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
               ],
             ),
-            child: ElevatedButton.icon(
-              onPressed: () => Navigator.of(context).pushNamed('/contact'),
-              icon: const Icon(Icons.mail_outline, size: 20),
-              label: const Text('Get In Touch'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                foregroundColor: AppColors.night,
-                shadowColor: Colors.transparent,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                textStyle: const TextStyle(fontWeight: FontWeight.w600),
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  experience.position,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.night,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${experience.company} • ${experience.period}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.night.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...experience.responsibilities.map((resp) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        margin: const EdgeInsets.only(top: 6, right: 8),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.sunshine,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          resp,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.night.withOpacity(0.8),
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )).toList(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContactSection(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(60),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            AppColors.sunshine.withOpacity(0.1),
+          ],
+        ),
+      ),
+      child: Column(
+        children: [
+          _buildSectionTitle('Let\'s Connect'),
+          const SizedBox(height: 40),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildContactButton(Icons.email, 'Email', () {}),
+              const SizedBox(width: 20),
+              _buildContactButton(Icons.phone, 'Call', () {}),
+              const SizedBox(width: 20),
+              _buildContactButton(Icons.link, 'LinkedIn', () {}),
+            ],
+          ),
+          const SizedBox(height: 40),
+          Text(
+            '© 2024 ${ResumeData.fullName}. Crafted with ❤️ in Flutter',
+            style: TextStyle(
+              color: AppColors.night.withOpacity(0.6),
+              fontSize: 14,
             ),
           ),
         ],
@@ -650,120 +866,93 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildFooter(BuildContext context) {
+  Widget _buildContactButton(IconData icon, String label, VoidCallback onPressed) {
     return Container(
-      padding: const EdgeInsets.all(40),
-      child: Text(
-        '© 2024 ${ResumeData.fullName}. Crafted with Flutter',
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: AppColors.night.withOpacity(0.5),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.sunshine, Color(0xFFFFD700)],
         ),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Widget _buildFloatingNavigation(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    final isTablet = Responsive.isTablet(context);
-    
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
-      top: _showFloatingNav ? 40 : -100,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
-          padding: EdgeInsets.symmetric(
-            horizontal: isMobile ? 12 : 20, 
-            vertical: isMobile ? 8 : 12,
+        borderRadius: BorderRadius.circular(50),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.sunshine.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
-          decoration: BoxDecoration(
-            color: AppColors.ghostWhite.withOpacity(0.95),
-            borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: AppColors.night.withOpacity(0.1)),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.night.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: isMobile 
-              ? _buildMobileNav(context)
-              : _buildDesktopNav(context),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMobileNav(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildNavItem(context, 'About', '/about'),
-          _buildNavItem(context, 'Experience', '/experience'),
-          _buildNavItem(context, 'Projects', '/projects'),
-          _buildNavItem(context, 'Skills', '/skills'),
-          _buildNavItem(context, 'Contact', '/contact'),
         ],
       ),
-    );
-  }
-
-  Widget _buildDesktopNav(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildNavItem(context, 'About', '/about'),
-        _buildNavItem(context, 'Experience', '/experience'),
-        _buildNavItem(context, 'Projects', '/projects'),
-        _buildNavItem(context, 'Skills', '/skills'),
-        _buildNavItem(context, 'Contact', '/contact'),
-      ],
-    );
-  }
-
-  Widget _buildNavItem(BuildContext context, String title, String route) {
-    final isMobile = Responsive.isMobile(context);
-    
-    return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(route),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: isMobile ? 12 : 16, 
-          vertical: isMobile ? 6 : 8,
-        ),
-        margin: EdgeInsets.symmetric(horizontal: isMobile ? 2 : 4),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.transparent,
-        ),
-        child: Text(
-          title,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: AppColors.night,
-            fontSize: isMobile ? 12 : 14,
-          ),
-        ),
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(icon, color: AppColors.night),
+        iconSize: 24,
+        padding: const EdgeInsets.all(16),
       ),
     );
   }
 
-  void _downloadResume() {
-    HapticFeedback.lightImpact();
-    // TODO: Implement resume download
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Resume download will be implemented'),
-        backgroundColor: AppColors.night,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  void _showMobileMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withOpacity(0.95),
+              Colors.white.withOpacity(0.9),
+            ],
+          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.night.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person, color: AppColors.night),
+              title: const Text('About'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/about');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.work, color: AppColors.night),
+              title: const Text('Experience'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/experience');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.code, color: AppColors.night),
+              title: const Text('Projects'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/projects');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.contact_mail, color: AppColors.night),
+              title: const Text('Contact'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/contact');
+              },
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
