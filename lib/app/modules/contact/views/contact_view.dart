@@ -27,12 +27,11 @@ class ContactView extends StatelessWidget {
           slivers: [
             _buildSliverAppBar(context),
             SliverPadding(
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width > 600 ? 32 : 16),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   _buildContactSection(context),
                   const SizedBox(height: 40),
-                  _buildContactForm(context),
                 ]),
               ),
             ),
@@ -44,6 +43,12 @@ class ContactView extends StatelessWidget {
 
   Widget _buildSliverAppBar(BuildContext context) {
     return SliverAppBar(
+      leading: Navigator.canPop(context)
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            )
+          : null,
       expandedHeight: 200,
       floating: false,
       pinned: true,
@@ -82,8 +87,9 @@ class ContactView extends StatelessWidget {
   }
 
   Widget _buildContactSection(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width <= 600;
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(isMobile ? 20 : 32),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
@@ -224,8 +230,9 @@ class ContactView extends StatelessWidget {
   }
 
   Widget _buildContactForm(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width <= 600;
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(isMobile ? 20 : 32),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
@@ -295,8 +302,6 @@ class ContactView extends StatelessWidget {
               _buildTextField('Email', Icons.email),
               const SizedBox(height: 16),
               _buildTextField('Subject', Icons.subject),
-              const SizedBox(height: 16),
-              _buildTextField('Message', Icons.message_outlined, maxLines: 4),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,

@@ -27,18 +27,18 @@ class ProjectsView extends StatelessWidget {
           slivers: [
             _buildSliverAppBar(context),
             SliverPadding(
-              padding: const EdgeInsets.all(32),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: MediaQuery.of(context).size.width > 600 ? 2 : 1,
-                  crossAxisSpacing: 24,
-                  mainAxisSpacing: 24,
-                  childAspectRatio: MediaQuery.of(context).size.width > 600 ? 0.9 : 1.1,
-                ),
+              padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width > 600 ? 32 : 16,
+                vertical: 16,
+              ),
+              sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final project = ResumeData.projects[index];
-                    return _buildProjectCard(project);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: _buildProjectCard(context, project),
+                    );
                   },
                   childCount: ResumeData.projects.length,
                 ),
@@ -52,6 +52,12 @@ class ProjectsView extends StatelessWidget {
 
   Widget _buildSliverAppBar(BuildContext context) {
     return SliverAppBar(
+      leading: Navigator.canPop(context)
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            )
+          : null,
       expandedHeight: 200,
       floating: false,
       pinned: true,
@@ -89,7 +95,8 @@ class ProjectsView extends StatelessWidget {
     );
   }
 
-  Widget _buildProjectCard(Project project) {
+  Widget _buildProjectCard(BuildContext context, Project project) {
+    final isMobile = MediaQuery.of(context).size.width <= 600;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
@@ -114,7 +121,7 @@ class ProjectsView extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(isMobile ? 20 : 24),
             decoration: BoxDecoration(
               border: Border.all(
                 color: Colors.white.withOpacity(0.3),
@@ -174,17 +181,15 @@ class ProjectsView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Expanded(
-                  child: Text(
-                    project.description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.night.withOpacity(0.8),
-                      height: 1.5,
-                    ),
-                    maxLines: 6,
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  project.description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.night.withOpacity(0.8),
+                    height: 1.5,
                   ),
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 if (project.links != null && project.links!.isNotEmpty) ...[
                   const SizedBox(height: 16),

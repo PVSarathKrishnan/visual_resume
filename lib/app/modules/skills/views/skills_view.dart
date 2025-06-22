@@ -27,7 +27,7 @@ class SkillsView extends StatelessWidget {
           slivers: [
             _buildSliverAppBar(context),
             SliverPadding(
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width > 600 ? 32 : 16),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   _buildSkillsSection(context),
@@ -80,8 +80,9 @@ class SkillsView extends StatelessWidget {
   }
 
   Widget _buildSkillsSection(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width <= 600;
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(isMobile ? 20 : 32),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(

@@ -27,7 +27,7 @@ class ExperienceView extends StatelessWidget {
           slivers: [
             _buildSliverAppBar(context),
             SliverPadding(
-              padding: const EdgeInsets.all(32),
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width > 600 ? 32 : 16),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   _buildExperienceTimeline(context),
@@ -42,6 +42,12 @@ class ExperienceView extends StatelessWidget {
 
   Widget _buildSliverAppBar(BuildContext context) {
     return SliverAppBar(
+      leading: Navigator.canPop(context)
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            )
+          : null,
       expandedHeight: 200,
       floating: false,
       pinned: true,
@@ -85,13 +91,13 @@ class ExperienceView extends StatelessWidget {
         ...ResumeData.experiences.asMap().entries.map((entry) {
           final index = entry.key;
           final exp = entry.value;
-          return _buildTimelineItem(exp, index == ResumeData.experiences.length - 1);
+          return _buildTimelineItem(context, exp, index == ResumeData.experiences.length - 1);
         }).toList(),
       ],
     );
   }
 
-  Widget _buildTimelineItem(Experience experience, bool isLast) {
+  Widget _buildTimelineItem(BuildContext context, Experience experience, bool isLast) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -138,7 +144,7 @@ class ExperienceView extends StatelessWidget {
         Expanded(
           child: Container(
             margin: const EdgeInsets.only(bottom: 40),
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width <= 600 ? 20 : 24),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(

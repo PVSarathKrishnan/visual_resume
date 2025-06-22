@@ -86,6 +86,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   Widget _buildMobileLayout(BuildContext context) {
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
         children: [
           _buildMobileNavigation(context),
@@ -120,16 +121,32 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildLogo(),
-          IconButton(
-            onPressed: () => _showMobileMenu(context),
-            icon: Container(
-              padding: const EdgeInsets.all(8),
+          GestureDetector(
+            onTap: () => _showMobileMenu(context),
+            child: Container(
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.sunshine.withOpacity(0.1),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.9),
+                    Colors.white.withOpacity(0.7),
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.sunshine.withOpacity(0.3)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.sunshine.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.menu, color: AppColors.night),
+              child: const Icon(
+                Icons.menu,
+                color: AppColors.night,
+                size: 24,
+              ),
             ),
           ),
         ],
@@ -267,14 +284,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildMobileHeroContent(BuildContext context) {
-    return Column(
-      children: [
-        _buildProfileAvatar(100),
-        const SizedBox(height: 30),
-        _buildHeroText(context, true),
-        const SizedBox(height: 30),
-        _buildHeroButtons(context, true),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        children: [
+          _buildProfileAvatar(120),
+          const SizedBox(height: 32),
+          _buildHeroText(context, true),
+          const SizedBox(height: 32),
+          _buildHeroButtons(context, true),
+        ],
+      ),
     );
   }
 
@@ -556,21 +576,37 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         children: [
           _buildSectionTitle('Featured Projects'),
           const SizedBox(height: 40),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: isMobile ? 1 : 2,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20,
-              childAspectRatio: 1.2,
+          if (isMobile)
+            // Mobile: Vertical list of project cards
+            Column(
+              children: ResumeData.projects.take(3).map((project) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: _buildProjectCard(project),
+                );
+              }).toList(),
+            )
+          else
+            // Desktop: Grid layout
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+                childAspectRatio: 1.2,
+              ),
+              itemCount: ResumeData.projects.take(4).length,
+              itemBuilder: (context, index) {
+                final project = ResumeData.projects[index];
+                return _buildProjectCard(project);
+              },
             ),
-            itemCount: ResumeData.projects.take(4).length,
-            itemBuilder: (context, index) {
-              final project = ResumeData.projects[index];
-              return _buildProjectCard(project);
-            },
-          ),
+          const SizedBox(height: 20),
+          _buildGradientButton('View All Projects', Icons.arrow_forward, () {
+            Navigator.pushNamed(context, '/projects');
+          }),
         ],
       ),
     );
@@ -670,17 +706,15 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Expanded(
-                  child: Text(
-                    project.description,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.night.withOpacity(0.8),
-                      height: 1.4,
-                    ),
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  project.description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.night.withOpacity(0.8),
+                    height: 1.4,
                   ),
+                  maxLines: 4,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -855,7 +889,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 40),
           Text(
-            '© 2024 ${ResumeData.fullName}. Crafted with ❤️ in Flutter',
+            '© 2024 ${ResumeData.fullName}. Crafted in Flutter',
             style: TextStyle(
               color: AppColors.night.withOpacity(0.6),
               fontSize: 14,
@@ -894,64 +928,251 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) => Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
               Colors.white.withOpacity(0.95),
-              Colors.white.withOpacity(0.9),
+              Colors.white.withOpacity(0.85),
             ],
           ),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.sunshine.withOpacity(0.2),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.night.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(2),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Handle bar
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.sunshine.withOpacity(0.6),
+                          AppColors.sunshine.withOpacity(0.4),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  
+                  // Menu header
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.sunshine.withOpacity(0.8),
+                              AppColors.sunshine.withOpacity(0.6),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.menu,
+                          color: AppColors.night,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ShaderMask(
+                        shaderCallback: (bounds) => LinearGradient(
+                          colors: [
+                            AppColors.night,
+                            AppColors.sunshine.withOpacity(0.8),
+                          ],
+                        ).createShader(bounds),
+                        child: const Text(
+                          'Navigation',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Menu items
+                  _buildMobileMenuItem(
+                    icon: Icons.person_outline,
+                    title: 'About Me',
+                    subtitle: 'Learn more about me',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/about');
+                    },
+                  ),
+                  _buildMobileMenuItem(
+                    icon: Icons.work_outline,
+                    title: 'Experience',
+                    subtitle: 'My work journey',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/experience');
+                    },
+                  ),
+                  _buildMobileMenuItem(
+                    icon: Icons.code_outlined,
+                    title: 'Projects',
+                    subtitle: 'Things I\'ve built',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/projects');
+                    },
+                  ),
+                  _buildMobileMenuItem(
+                    icon: Icons.build_outlined,
+                    title: 'Skills',
+                    subtitle: 'Technologies I use',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/skills');
+                    },
+                  ),
+                  _buildMobileMenuItem(
+                    icon: Icons.contact_mail_outlined,
+                    title: 'Contact',
+                    subtitle: 'Get in touch',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/contact');
+                    },
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Download CV button
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.sunshine.withOpacity(0.8),
+                          AppColors.sunshine.withOpacity(0.6),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.sunshine.withOpacity(0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        // Handle CV download
+                      },
+                      icon: const Icon(
+                        Icons.download_outlined,
+                        color: AppColors.night,
+                      ),
+                      label: const Text(
+                        'Download CV',
+                        style: TextStyle(
+                          color: AppColors.night,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.person, color: AppColors.night),
-              title: const Text('About'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/about');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.work, color: AppColors.night),
-              title: const Text('Experience'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/experience');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.code, color: AppColors.night),
-              title: const Text('Projects'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/projects');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.contact_mail, color: AppColors.night),
-              title: const Text('Contact'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/contact');
-              },
-            ),
-            const SizedBox(height: 20),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileMenuItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.sunshine.withOpacity(0.2),
+        ),
+      ),
+      child: ListTile(
+        onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.sunshine.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: AppColors.night,
+            size: 22,
+          ),
+        ),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.night,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.night.withOpacity(0.7),
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: AppColors.night.withOpacity(0.5),
+          size: 16,
         ),
       ),
     );

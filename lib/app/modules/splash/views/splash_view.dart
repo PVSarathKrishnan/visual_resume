@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../controllers/splash_controller.dart';
 
 /// Splash View
@@ -12,11 +13,23 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      body: ResponsiveLayout(
-        mobile: _buildMobileLayout(context),
-        tablet: _buildTabletLayout(context),
-        desktop: _buildDesktopLayout(context),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.ghostWhite,
+              Color(0xFFFFFDF7),
+              Color(0xFFFFFBEC),
+            ],
+          ),
+        ),
+        child: ResponsiveLayout(
+          mobile: _buildMobileLayout(context),
+          tablet: _buildTabletLayout(context),
+          desktop: _buildDesktopLayout(context),
+        ),
       ),
     );
   }
@@ -85,13 +98,13 @@ class SplashView extends GetView<SplashController> {
                 Icon(
                   Icons.person,
                   size: isMobile ? 80 : 120,
-                  color: Colors.white,
+                  color: AppColors.sunshine,
                 ),
                 SizedBox(height: Responsive.spacing(context)),
                 Text(
                   AppConstants.appName,
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                    color: Colors.white,
+                    color: AppColors.night,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
@@ -100,7 +113,7 @@ class SplashView extends GetView<SplashController> {
                 Text(
                   'Professional Portfolio',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white70,
+                    color: AppColors.night.withOpacity(0.7),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -116,7 +129,7 @@ class SplashView extends GetView<SplashController> {
   Widget _buildLoadingIndicator(BuildContext context) {
     return Obx(() => controller.isLoading
         ? const CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.sunshine),
           )
         : const SizedBox.shrink());
   }
@@ -129,7 +142,7 @@ class SplashView extends GetView<SplashController> {
             controller.loadingMessage,
             key: ValueKey(controller.loadingMessage),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.white70,
+              color: AppColors.night.withOpacity(0.7),
             ),
             textAlign: TextAlign.center,
           ),
@@ -151,8 +164,8 @@ class SplashView extends GetView<SplashController> {
                   child: ElevatedButton(
                     onPressed: controller.retryInitialization,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: AppColors.sunshine,
+                      foregroundColor: AppColors.night,
                     ),
                     child: const Text('Retry'),
                   ),

@@ -43,7 +43,13 @@ class VisualResumeApp extends StatelessWidget {
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.linear(1.0), // Prevent text scaling issues
           ),
-          child: child!,
+          child: GestureDetector(
+            onTap: () {
+              // Dismiss any focus to prevent mouse tracker issues
+              FocusScope.of(context).unfocus();
+            },
+            child: child!,
+          ),
         );
       },
     );
