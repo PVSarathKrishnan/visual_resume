@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../../../core/constants/resume_data.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_images.dart';
 
 class ExperienceView extends StatelessWidget {
   const ExperienceView({super.key});

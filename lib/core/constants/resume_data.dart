@@ -10,7 +10,7 @@ class ResumeData {
   static const String location = 'Trivandrum, India';
   static const String email = 'pvsarathkrishnan@gmail.com';
   static const String phone = '+91 90745 39022';
-  static const String linkedIn = 'sarath-krishnan-p-v';
+  static const String linkedIn = 'www.linkedin.com/in/sarath-krishnan-p-v';
 
   static const String summary =
       'Flutter Developer with 2 years of experience creating high-quality, responsive mobile applications. Passionate about clean UI/UX design, scalable architecture and maintainable code. Comfortable with GetX, Provider and Bloc for state management, and adept at leveraging AI tools to accelerate development.';
@@ -58,38 +58,60 @@ class ResumeData {
   // Projects
   static const projects = <Project>[
     Project(
-      name: 'Piggyback Sports',
+      name: 'My Property Journey',
       year: '2024',
-      description:
-          'Sports bet tracking app allowing users to manage real or hypothetical bets, similar to a stock portfolio tracker. Built with Flutter (Provider), GraphQL and Firebase chat.',
+      description: 'Support app for Leadsden used by real-estate agents for daily operations. Built with Flutter and GetX.',
+      links: {
+        'Play Store': null,
+      },
+    ),
+    Project(
+      name: 'Leadsden',
+      year: '2024',
+      description: 'Large-scale CRM application for real-estate data and agent management. Flutter + Bloc with REST APIs, integrates with REX and Agentbox CRMs.',
+    ),
+    Project(
+      name: 'Fintalkr',
+      year: '2025',
+      description: 'Financial advisory and consultation platform connecting users with certified financial experts. Features secure chat, video calls, portfolio analysis, and investment recommendations. Built with Flutter and Firebase.',
       links: {
         'Play Store': null,
         'App Store': null,
       },
     ),
     Project(
-      name: 'Leadsden',
+      name: 'Piggyback Sports',
       year: '2024',
-      description:
-          'Large-scale CRM application for real-estate data and agent management. Flutter + Bloc with REST APIs, integrates with REX and Agentbox CRMs.',
+      description: 'Sports bet tracking app allowing users to manage real or hypothetical bets, similar to a stock portfolio tracker. Built with Flutter (Provider), GraphQL and Firebase chat.',
+      links: {
+        'Play Store': null,
+        'App Store': null,
+      },
     ),
     Project(
-      name: 'My Property Journey',
-      year: '2024',
-      description:
-          'Support app for Leadsden used by real-estate agents for daily operations. Built with Flutter and GetX.',
-    ),
-    Project(
-      name: 'Budget Bee',
+      name: 'Tanq Driver',
       year: '2023',
-      description:
-          'Cross-platform money management app focused on intuitive personal finance. Released on Play Store.',
+      description: 'Driver companion app for the Tanq ride-sharing platform. Features real-time ride requests, GPS navigation, earnings tracking, and driver performance analytics. Built with Flutter and GetX.',
+      links: {
+        'Play Store': null,
+        'App Store': null,
+      },
     ),
     Project(
       name: 'Knack',
       year: '2023',
-      description:
-          'E-learning platform designed with MVVM & DDD, built as responsive Flutter Web app with Firebase sync. Available on Amazon Appstore.',
+      description: 'E-learning platform designed with MVVM & DDD, built as responsive Flutter Web app with Firebase sync. Available on Amazon Appstore.',
+      links: {
+        'Amazon Appstore': 'https://www.amazon.com/dp/B0XXXXXXXX',
+      },
+    ),
+    Project(
+      name: 'Budget Bee',
+      year: '2022',
+      description: 'Cross-platform money management app focused on intuitive personal finance. Released on Play Store.',
+      links: {
+        'Play Store': 'https://play.google.com/store/apps/details?id=com.budgetbee.app',
+      },
     ),
   ];
 

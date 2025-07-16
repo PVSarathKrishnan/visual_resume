@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../../../core/constants/resume_data.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_images.dart';
 
 class ProjectsView extends StatelessWidget {
   const ProjectsView({super.key});
@@ -131,26 +132,50 @@ class ProjectsView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.sunshine.withOpacity(0.8),
-                            AppColors.sunshine.withOpacity(0.6),
-                          ],
+                                  Row(
+                    children: [
+                      Opacity(
+                        opacity: 0.5,  // Low-fade effect
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.sunshine.withOpacity(0.9),
+                                AppColors.sunshine.withOpacity(0.7),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.sunshine.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: AppImages.hasProjectLogo(project.name)
+                              ? Image.asset(
+                                  AppImages.getProjectLogo(project.name),
+                                  width: 24,
+                                  height: 24,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.code,
+                                      color: AppColors.night,
+                                      size: 24,
+                                    );
+                                  },
+                                )
+                              : const Icon(
+                                  Icons.code,
+                                  color: AppColors.night,
+                                  size: 24,
+                                ),
                         ),
-                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
-                        Icons.code,
-                        color: AppColors.night,
-                        size: 24,
-                      ),
-                    ),
-                    const Spacer(),
+                      const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(

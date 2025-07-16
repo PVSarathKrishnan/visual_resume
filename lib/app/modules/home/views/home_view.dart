@@ -4,6 +4,8 @@ import '../../../../core/utils/responsive.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/resume_data.dart';
+import '../../../../core/constants/app_images.dart';
+import 'package:url_launcher/url_launcher.dart';  // Import for URL launching
 
 /// Home View - Stunning Visual Resume
 class HomeView extends StatefulWidget {
@@ -239,7 +241,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         ],
       ),
       child: ElevatedButton.icon(
-        onPressed: onPressed,
+        onPressed: () async {
+          const url = 'https://drive.google.com/drive/folders/1uD25fNowI78n-DYNqB3zKwvIdfg0f-lI?usp=sharing';
+          if (await canLaunch(url)) {
+            await launch(url);
+          } else {
+            // Show an error message if launch fails
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Could not launch URL')),
+            );
+          }
+        },
         icon: Icon(icon, color: AppColors.night),
         label: Text(
           text,
@@ -681,12 +693,33 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       colors: [AppColors.sunshine, Color(0xFFFFD700)],
                     ),
                     borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.sunshine.withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.code,
-                    color: AppColors.night,
-                    size: 24,
-                  ),
+                  child: AppImages.hasProjectLogo(project.name)
+                      ? Image.asset(
+                          AppImages.getProjectLogo(project.name),
+                          width: 24,
+                          height: 24,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.code,
+                              color: AppColors.night,
+                              size: 24,
+                            );
+                          },
+                        )
+                      : const Icon(
+                          Icons.code,
+                          color: AppColors.night,
+                          size: 24,
+                        ),
                 ),
                 const SizedBox(height: 16),
                 Text(
