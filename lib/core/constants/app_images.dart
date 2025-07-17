@@ -16,7 +16,7 @@ class AppImages {
 
   // Images
   static const String profilePlaceholder = 'assets/images/profile_placeholder.png';
-  static const String profileAvatar = 'assets/images/profile_avatar.png';
+  static const String profileAvatar = 'assets/images/sarath_pfp.png';
 
   // Documents
   static const String resumePdf = 'assets/documents/Sarath_krishnan_pv.pdf';

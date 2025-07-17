@@ -170,7 +170,21 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               _buildNavButton('Projects', () => Navigator.pushNamed(context, '/projects')),
               _buildNavButton('Contact', () => Navigator.pushNamed(context, '/contact')),
               const SizedBox(width: 20),
-              _buildGradientButton('Download CV', Icons.download, () {}),
+              _buildGradientButton('Download CV', Icons.download, 
+              () async {
+                          print('Downloading CV');
+                              const url = 'https://drive.google.com/drive/folders/1uD25fNowI78n-DYNqB3zKwvIdfg0f-lI?usp=sharing';
+                              if (await canLaunch(url)) {
+                                await launch(url);
+                              } else {
+                                // Show an error message if launch fails
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Could not launch URL')),
+                                );
+                              }
+                          
+                        },
+              ),
             ],
           ),
         ],
@@ -241,17 +255,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
         ],
       ),
       child: ElevatedButton.icon(
-        onPressed: () async {
-          const url = 'https://drive.google.com/drive/folders/1uD25fNowI78n-DYNqB3zKwvIdfg0f-lI?usp=sharing';
-          if (await canLaunch(url)) {
-            await launch(url);
-          } else {
-            // Show an error message if launch fails
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Could not launch URL')),
-            );
-          }
-        },
+       onPressed: onPressed,
         icon: Icon(icon, color: AppColors.night),
         label: Text(
           text,
@@ -300,7 +304,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
-          _buildProfileAvatar(120),
+          _buildProfileAvatar(MediaQuery.of(context).size.width > 600 ? 10 : 100),
           const SizedBox(height: 32),
           _buildHeroText(context, true),
           const SizedBox(height: 32),
@@ -342,52 +346,57 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   }
 
   Widget _buildProfileAvatar(double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.sunshine,
-            Color(0xFFFFD700),
-            AppColors.sunshine,
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.sunshine.withOpacity(0.3),
-            blurRadius: 25,
-            offset: const Offset(0, 12),
-          ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.8),
-            blurRadius: 20,
-            offset: const Offset(-10, -10),
-          ),
-        ],
-      ),
-      child: Container(
-        margin: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.ghostWhite,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
+    return Column(
+      children: [
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.sunshine,
+                Color(0xFFFFD700),
+                AppColors.sunshine,
+              ],
             ),
-          ],
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.sunshine.withOpacity(0.3),
+                blurRadius: 25,
+                offset: const Offset(0, 12),
+              ),
+              BoxShadow(
+                color: Colors.white.withOpacity(0.8),
+                blurRadius: 20,
+                offset: const Offset(-10, -10),
+              ),
+            ],
+          ),
+          child: Container(
+            margin: const EdgeInsets.all(0),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.ghostWhite,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Image.asset(
+              AppImages.profileAvatar,
+              width: size*1.2,
+              height: size*1.2,
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
-        child: Icon(
-          Icons.person,
-          size: size * 0.5,
-          color: AppColors.night.withOpacity(0.7),
-        ),
-      ),
+      ],
     );
   }
 
@@ -472,7 +481,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
       alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
       children: [
         _buildGradientButton('View Projects', Icons.rocket_launch, () {
-          Navigator.pushNamed(context, '/projects');
+         Navigator.pushNamed(context, '/projects');
         }),
         _buildOutlineButton('Contact Me', Icons.message, () {
           Navigator.pushNamed(context, '/contact');
@@ -1101,47 +1110,71 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                   const SizedBox(height: 16),
                   
                   // Download CV button
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.sunshine.withOpacity(0.8),
-                          AppColors.sunshine.withOpacity(0.6),
+                  GestureDetector(
+                    onTap: () async {
+                      print('Downloading CV');
+                      const url = 'https://drive.google.com/drive/folders/1uD25fNowI78n-DYNqB3zKwvIdfg0f-lI?usp=sharing';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        // Show an error message if launch fails
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Could not launch URL')),
+                        );
+                      }
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.sunshine.withOpacity(0.8),
+                            AppColors.sunshine.withOpacity(0.6),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.sunshine.withOpacity(0.3),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.sunshine.withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        // Handle CV download
-                      },
-                      icon: const Icon(
-                        Icons.download_outlined,
-                        color: AppColors.night,
-                      ),
-                      label: const Text(
-                        'Download CV',
-                        style: TextStyle(
+                      child: ElevatedButton.icon(
+                        
+                         onPressed: () async {
+                          print('Downloading CV');
+                              const url = 'https://drive.google.com/drive/folders/1uD25fNowI78n-DYNqB3zKwvIdfg0f-lI?usp=sharing';
+                              if (await canLaunch(url)) {
+                                await launch(url);
+                              } else {
+                                // Show an error message if launch fails
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Could not launch URL')),
+                                );
+                              }
+                          
+                        },
+                        icon: const Icon(
+                          Icons.download_outlined,
                           color: AppColors.night,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
                         ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                        label: const Text(
+                          'Download CV',
+                          style: TextStyle(
+                            color: AppColors.night,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
                       ),
                     ),
