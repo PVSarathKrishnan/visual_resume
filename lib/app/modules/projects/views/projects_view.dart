@@ -55,7 +55,7 @@ class ProjectsView extends StatelessWidget {
     return SliverAppBar(
       leading: Navigator.canPop(context)
           ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+              icon: const Icon(Icons.arrow_back_ios, color:AppColors.night),
               onPressed: () => Navigator.pop(context),
             )
           : null,

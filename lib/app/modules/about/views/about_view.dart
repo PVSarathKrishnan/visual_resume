@@ -46,9 +46,18 @@ class AboutView extends StatelessWidget {
 
   Widget _buildSliverAppBar(BuildContext context) {
     return SliverAppBar(
+      leading: Navigator.canPop(context)
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back_ios, color:AppColors.night),
+              onPressed: () => Navigator.pop(context),
+            )
+          : null,
       expandedHeight: 200,
       floating: false,
       pinned: true,
+      iconTheme: const IconThemeData(
+        color: AppColors.night,
+      ),
       backgroundColor: Colors.transparent,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
