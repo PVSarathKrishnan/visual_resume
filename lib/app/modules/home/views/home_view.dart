@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../../../core/utils/responsive.dart';
-import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/resume_data.dart';
 import '../../../../core/constants/app_images.dart';
+import '../../../../core/routes/app_routes.dart';
 import 'package:url_launcher/url_launcher.dart';  // Import for URL launching
 
 /// Home View - Stunning Visual Resume
@@ -695,48 +695,49 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.sunshine, Color(0xFFFFD700)],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.sunshine.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    color: Colors.white,
+                    child: AppImages.hasProjectLogo(project.name)
+                        ? Image.asset(
+                            AppImages.getProjectLogo(project.name),
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(
+                                Icons.code,
+                                color: AppColors.night,
+                                size: 24,
+                              );
+                            },
+                          )
+                        : const Icon(
+                            Icons.code,
+                            color: AppColors.night,
+                            size: 24,
+                          ),
                   ),
-                  child: AppImages.hasProjectLogo(project.name)
-                      ? Image.asset(
-                          AppImages.getProjectLogo(project.name),
-                          width: 24,
-                          height: 24,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.code,
-                              color: AppColors.night,
-                              size: 24,
-                            );
-                          },
-                        )
-                      : const Icon(
-                          Icons.code,
-                          color: AppColors.night,
-                          size: 24,
-                        ),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                GestureDetector(
+                  onTap: () {
+                    final route = AppRoutes.getProjectRouteByName(project.name);
+                    if (route != null) {
+                      Navigator.pushNamed(context, route);
+                    }
+                  },
+                  child: Text(
                   project.name,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.night,
+                  ),
                   ),
                 ),
                 const SizedBox(height: 8),

@@ -10,6 +10,15 @@ class AppImages {
   static const String piggyLogo = 'assets/logo/piggy.png';
   static const String tanqLogo = 'assets/logo/tanq_png.png';
 
+  // New white-background square logos
+  static const String budgetWhiteLogo = 'assets/logo/budget_white.png';
+  static const String finWhiteLogo = 'assets/logo/fin_white.png';
+  static const String knackWhiteLogo = 'assets/logo/knack_white.png';
+  static const String leadsWhiteLogo = 'assets/logo/leads_white.png';
+  static const String mpjWhiteLogo = 'assets/logo/mpj_white.png';
+  static const String piggyWhiteLogo = 'assets/logo/piggy_white.png';
+  static const String tanqWhiteLogo = 'assets/logo/tanq_white.png';
+
   // Icons
   static const String appIcon = 'assets/icons/app_icon.png';
   static const String launcherIcon = 'assets/icons/launcher_icon.png';
@@ -23,14 +32,14 @@ class AppImages {
 
   // Project logo mapping
   static const Map<String, String> projectLogos = {
-    'Piggyback Sports': piggyLogo,
-    'Leadsden': leadsLogo,
-    'My Property Journey': mpjLogo,
-    'Budget Bee': beeLogo,
-    'Knack': knackLogo,
-    'Tanq Driver': tanqLogo,
-    'Tanq Rider': tanqLogo,
-    'Fintalkr': finLogo,
+    'Piggyback Sports': piggyWhiteLogo,
+    'Leadsden': leadsWhiteLogo,
+    'My Property Journey': mpjWhiteLogo,
+    'Budget Bee': budgetWhiteLogo,
+    'Knack': knackWhiteLogo,
+    'Tanq Driver': tanqWhiteLogo,
+    'Tanq Rider': tanqWhiteLogo,
+    'Fintalkr': finWhiteLogo,
   };
 
   // Get project logo by name

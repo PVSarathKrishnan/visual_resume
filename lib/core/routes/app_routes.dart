@@ -5,6 +5,13 @@ import '../../app/modules/experience/views/experience_view.dart';
 import '../../app/modules/projects/views/projects_view.dart';
 import '../../app/modules/skills/views/skills_view.dart';
 import '../../app/modules/contact/views/contact_view.dart';
+import '../../app/modules/projects/views/project_mpj_view.dart';
+import '../../app/modules/projects/views/project_leadsden_view.dart';
+import '../../app/modules/projects/views/project_fintalkr_view.dart';
+import '../../app/modules/projects/views/project_piggyback_sports_view.dart';
+import '../../app/modules/projects/views/project_tanq_driver_view.dart';
+import '../../app/modules/projects/views/project_knack_view.dart';
+import '../../app/modules/projects/views/project_budget_bee_view.dart';
 import '../../app/modules/splash/views/splash_view.dart';
 
 /// App Routes Class - Manages all application routes
@@ -17,6 +24,14 @@ class AppRoutes {
   static const String projects = '/projects';
   static const String skills = '/skills';
   static const String contact = '/contact';
+  // Project detail routes
+  static const String projectMpj = '/project/mpj';
+  static const String projectLeadsden = '/project/leadsden';
+  static const String projectFintalkr = '/project/fintalkr';
+  static const String projectPiggybackSports = '/project/piggyback-sports';
+  static const String projectTanqDriver = '/project/tanq-driver';
+  static const String projectKnack = '/project/knack';
+  static const String projectBudgetBee = '/project/budget-bee';
 
   // Initial Route
   static const String initial = splash;
@@ -38,6 +53,20 @@ class AppRoutes {
         return _createRoute(const SkillsView());
       case contact:
         return _createRoute(const ContactView());
+      case projectMpj:
+        return _createRoute(const ProjectMpjView());
+      case projectLeadsden:
+        return _createRoute(const ProjectLeadsdenView());
+      case projectFintalkr:
+        return _createRoute(const ProjectFintalkrView());
+      case projectPiggybackSports:
+        return _createRoute(const ProjectPiggybackSportsView());
+      case projectTanqDriver:
+        return _createRoute(const ProjectTanqDriverView());
+      case projectKnack:
+        return _createRoute(const ProjectKnackView());
+      case projectBudgetBee:
+        return _createRoute(const ProjectBudgetBeeView());
       default:
         return _createRoute(const NotFoundView());
     }
@@ -77,6 +106,13 @@ class AppRoutes {
       projects,
       skills,
       contact,
+      projectMpj,
+      projectLeadsden,
+      projectFintalkr,
+      projectPiggybackSports,
+      projectTanqDriver,
+      projectKnack,
+      projectBudgetBee,
     ];
   }
 
@@ -102,44 +138,47 @@ class AppRoutes {
         return 'Skills';
       case contact:
         return 'Contact';
+      case projectMpj:
+        return 'My Property Journey';
+      case projectLeadsden:
+        return 'Leadsden';
+      case projectFintalkr:
+        return 'Fintalkr';
+      case projectPiggybackSports:
+        return 'Piggyback Sports';
+      case projectTanqDriver:
+        return 'Tanq Driver';
+      case projectKnack:
+        return 'Knack';
+      case projectBudgetBee:
+        return 'Budget Bee';
       default:
         return 'Unknown';
     }
   }
 
-  /// Build placeholder view for routes that don't have views yet
-  static Widget _buildPlaceholderView(String title) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.construction,
-              size: 100,
-              color: Colors.grey,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              '$title Page',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'This page is under construction',
-              style: TextStyle(fontSize: 16),
-            ),
-          ],
-        ),
-      ),
-    );
+  /// Map project name to its dedicated route
+  static String? getProjectRouteByName(String projectName) {
+    switch (projectName) {
+      case 'My Property Journey':
+        return projectMpj;
+      case 'Leadsden':
+        return projectLeadsden;
+      case 'Fintalkr':
+        return projectFintalkr;
+      case 'Piggyback Sports':
+        return projectPiggybackSports;
+      case 'Tanq Driver':
+        return projectTanqDriver;
+      case 'Knack':
+        return projectKnack;
+      case 'Budget Bee':
+        return projectBudgetBee;
+      default:
+        return null;
+    }
   }
+
 }
 
 /// Not Found View for undefined routes
